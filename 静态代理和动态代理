@@ -1,0 +1,230 @@
+静态代理：
+
+具体用户管理实现类
+
+public class UserManagerImpl implements UserManager {  
+
+  
+
+    @Override  
+
+    public void addUser(String userId, String userName) {  
+
+        System.out.println("UserManagerImpl.addUser");  
+
+    }  
+
+  
+
+    @Override  
+
+    public void delUser(String userId) {  
+
+        System.out.println("UserManagerImpl.delUser");  
+
+    }  
+
+  
+
+    @Override  
+
+    public String findUser(String userId) {  
+
+        System.out.println("UserManagerImpl.findUser");  
+
+        return "张三";  
+
+    }  
+
+  
+
+    @Override  
+
+    public void modifyUser(String userId, String userName) {  
+
+        System.out.println("UserManagerImpl.modifyUser");  
+
+  
+
+    }  
+
+} 
+
+
+e.g.2
+
+package proxy;
+
+import java.util.Date;
+
+public class HelloServiceProxy implements HelloService{
+
+  //表示被代理的HelloService 实例
+
+  private HelloService helloService; 
+
+  public HelloServiceProxy(HelloService helloService){
+
+    this.helloService=helloService;
+
+  }
+
+  public void setHelloServiceProxy(HelloService helloService){
+
+      this.helloService=helloService;
+
+  }
+
+  public String echo(String msg){
+
+	//预处理
+
+    System.out.println("before calling echo()"); 
+
+	 //调用被代理的HelloService 实例的echo()方法
+
+    String result=helloService.echo(msg);
+
+	//事后处理
+
+    System.out.println("after calling echo()"); 
+
+    return result;
+
+  }
+
+  public Date getTime(){
+
+	//预处理
+
+    System.out.println("before calling getTime()"); 
+
+	 //调用被代理的HelloService 实例的getTime()方法
+
+    Date date=helloService.getTime();
+
+	//事后处理
+
+    System.out.println("after calling getTime()"); 
+
+    return date;
+
+    }
+
+}
+
+
+
+
+动态代理：
+
+具体用户管理实现类
+
+public class UserManagerImpl implements UserManager {  
+
+  
+
+    @Override  
+
+    public void addUser(String userId, String userName) {  
+
+        System.out.println("UserManagerImpl.addUser");  
+
+    }  
+
+  
+
+    @Override  
+
+    public void delUser(String userId) {  
+
+        System.out.println("UserManagerImpl.delUser");  
+
+    }  
+
+  
+
+    @Override  
+
+    public String findUser(String userId) {  
+
+        System.out.println("UserManagerImpl.findUser");  
+
+        return "张三";  
+
+    }  
+
+  
+
+    @Override  
+
+    public void modifyUser(String userId, String userName) {  
+
+        System.out.println("UserManagerImpl.modifyUser");  
+
+  
+
+    }  
+
+  
+
+}  
+
+
+
+e.g.
+动态代理客户类 
+
+public class Client {  
+
+  
+
+ public static void main(String[] args) {  
+
+  
+
+  Subject proxy = DynProxyFactory.getInstance();  
+
+  proxy.dealTask("DBQueryTask");  
+
+ }   
+
+  
+
+}  
+
+
+静态代理与动态代理的区别与联系
+
+静态：由程序员创建代理类或特定工具自动生成源代码再对其编译。在程序运行前代理类的.class文件就已经存在了。
+
+动态：在程序运行时运用反射机制动态创建而成。
+
+
+
+静态代理类优缺点
+
+优点：
+
+业务类只需要关注业务逻辑本身，保证了业务类的重用性。这是代理的共有优点。代理使客户端不需要知道实现类是什么，怎么做的，而客户端只需知道代理即可，对于如上的客户端代码，newUserManagerImpl()可以应用工厂将它隐藏，如上只是举个例子而已。
+
+缺点：
+
+1）代理类和委托类实现了相同的接口，代理类通过委托类实现了相同的方法。这样就出现了大量的代码重复。如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有代理类也需要实现此方法。增加了代码维护的复杂度。
+
+2）代理对象只服务于一种类型的对象，如果要服务多类型的对象。势必要为每一种对象都进行代理，静态代理在程序规模稍大时就无法胜任了。如上的代码是只为UserManager类的访问提供了代理，但是如果还要为其他类如Department类提供代理的话，就需要我们再次添加代理Department的代理类。
+
+
+动态代理
+动态代理实现步骤
+具体步骤是：
+实现InvocationHandler接口创建自己的调用处理器
+给Proxy类提供ClassLoader和代理接口类型数组创建动态代理类
+以调用处理器类型为参数，利用反射机制得到动态代理类的构造函数
+以调用处理器对象为参数，利用动态代理类的构造函数创建动态代理类对象
+
+动态代理优点：
+
+动态代理与静态代理相比较，最大的好处是接口中声明的所有方法都被转移到调用处理器一个集中的方法中处理（InvocationHandler.invoke）。这样，在接口方法数量比较多的时候，我们可以进行灵活处理，而不需要像静态代理那样每一个方法进行中转。而且动态代理的应用使我们的类职责更加单一，复用性更强
+
+缺点：没有摆脱仅支持 interface 代理的束缚
